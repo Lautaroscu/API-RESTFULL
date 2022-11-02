@@ -20,7 +20,7 @@
     {
     $chapters = $this->chapter_model->getAll();
     if($chapters){
-        $this->api_view->response($chapters , "Mostrando " . count($chapters) .  " capitulos");
+        $this->api_view->response($chapters , 200 , "Mostrando " . count($chapters) .  " capitulos");
     }
     else{
             $this->api_view->response("No se encontro ningun capitulo" , 404);
@@ -81,28 +81,16 @@
             $this->api_view->response($chapters) ;
         }
     }
-    function orderASC($params = null) {
-       // $by = 'ASC' ;
-      $order = $this->chapter_model->orderASC() ;
+    function orderById($params = null) {
+        $order = $params[':ORDER'] ;
+      $order = $this->chapter_model->orderById($order) ;
       if($order){
               $this->api_view->response($order) ;
       }
-      else{
-        $this->api_view->response("Elija orden ASC "  ,400) ;
-      }
+    
      
     }
-    function orderDESC($params = null) {
-       //ss $by = 'DESC' ;
-      $order = $this->chapter_model->orderDESC() ;
-      if($order){
-              $this->api_view->response($order) ;
-      }
-      else{
-        $this->api_view->response("Elija orden DESC "  ,400) ;
-      }
-     
-    }
+   
     function page($params = null){
         $max = $params[':?'] ;
         $chapters = $this->chapter_model->pagination($max) ;
@@ -113,8 +101,23 @@
             $this->api_view->response("No hay capitulos") ;
 
         }
+        
+    }
+    function order($params = null) {
+        $field = $params[':FIELD'];
+        $order = $params[':ORDERBY'] ;
+        $chapters = $this->chapter_model->order($field , $order) ;
+        var_dump($field , $order) ;
+        if($chapters)
+        $this->api_view->response($chapters , 200 , "se ordeno con exito") ;
+        else{
+            $this->api_view->response("No hay una columna con ese nombre") ;
+
+        }
+    }
+  
     }
 
     
 
-    }
+    

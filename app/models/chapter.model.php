@@ -46,25 +46,25 @@ class ChapterModel
         $query = $this->db->prepare("UPDATE capitulos SET titulo_cap = ? , descripcion = ? WHERE id_capitulo = ? ");
         $query->execute(array($title, $description, $id));
     }
-    function orderASC()
+    function orderById($order)
     {
-        $query = $this->db->prepare("SELECT * FROM capitulos ORDER BY id_capitulo ASC");
+        $query = $this->db->prepare("SELECT * FROM capitulos ORDER BY id_capitulo $order");
         $query->execute();
         $chapters = $query->fetchAll(PDO::FETCH_OBJ);
         return $chapters;
     }
-    function orderDESC()
-    {
-        $query = $this->db->prepare("SELECT * FROM capitulos ORDER BY id_capitulo DESC");
-        $query->execute();
-        $chapters = $query->fetchAll(PDO::FETCH_OBJ);
-        return $chapters;
-    }
-    function pagination($id){
-        $query = $this->db->prepare("SELECT * FROM capitulos LIMIT 0 , $id") ;
+  
+    function pagination($limit){
+        $query = $this->db->prepare("SELECT * FROM capitulos LIMIT 0 , $limit") ;
         $query->execute() ;
         return $query->fetchAll(PDO::FETCH_OBJ) ;
 
     }
+    function order($field , $order){
+        $query = $this->db->prepare("SELECT * FROM capitulos ORDER BY $field  $order") ;
+        $query->execute() ;
+        return $query->fetchAll(PDO::FETCH_OBJ);
+    }
+    
     
 }
