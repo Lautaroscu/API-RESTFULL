@@ -9,6 +9,28 @@ class ChapterModel
     {
         $this->db = new PDO('mysql:host=localhost;' . 'dbname=tpe;' . 'charset=utf8', 'root', '');
     }
+    function getAll($sort = null , $order = null , $page = null) 
+    {
+        if(isset($sort) && isset($order) && $page){
+            $query = $this->db->prepare("SELECT * FROM capitulos ORDER BY $sort $order LIMIT 0 , $page");
+            $query->execute();
+            $chapters = $query->fetchAll(PDO::FETCH_OBJ);
+            return $chapters;
+        }
+        else if(isset($sort) && isset($order)){
+            $query = $this->db->prepare("SELECT * FROM capitulos ORDER BY $sort $order");
+            $query->execute();
+            $chapters = $query->fetchAll(PDO::FETCH_OBJ);
+            return $chapters;
+        }
+        else{
+             $query = $this->db->prepare("SELECT * FROM capitulos");
+            $query->execute();
+            $chapters = $query->fetchAll(PDO::FETCH_OBJ);
+            return $chapters;
+        }
+       
+    }
    
     function filter($id)
     {
