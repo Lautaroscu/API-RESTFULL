@@ -20,17 +20,28 @@
         {
             $chapters = $this->chapter_model->getAll();
             if ($chapters) {
-                if (!empty($_GET['sort']) && !empty($_GET['order']) && !empty($_GET['page'])) {
-                    $page = $_GET['page'];
+                if (!empty($_GET['sort']) && !empty($_GET['order']) &&  !empty($_GET['limit'])) {
                     $sort = $_GET['sort'];
                     $order = $_GET['order'];
-                    $chapters = $this->chapter_model->getAll($sort, $order, $page);
+                    $page = 0;
+                    $limit = $_GET['limit'];
+                    $chapters = $this->chapter_model->getAll($sort, $order, $page , $limit);
                     $this->api_view->response($chapters, 200, "se ordeno y pagino con exito");
                 } else if (!empty($_GET['sort']) && !empty($_GET['order'])) {
                     $sort = $_GET['sort'];
                     $order = $_GET['order'];
                     $chapters = $this->chapter_model->getAll($sort, $order);
                     $this->api_view->response($chapters, 200, "se ordeno con exito");
+                } else if (!empty($_GET['filter'])) {
+
+                    $filter = $_GET['filter'] ;
+                    var_dump($filter) ;
+                    $chapters = $this->chapter_model->getAll(null , null , null , $filter);
+                    if ($chapters) {
+                        $this->api_view->response($chapters, 200, "filtrado con exito");
+                    } else {
+                        $this->api_view->response("No se encontraron resultados ", 404);
+                    }
                 } else {
                     $chapters = $this->chapter_model->getAll();
                     $this->api_view->response($chapters, 200, "Mostrando " . count($chapters) .  " capitulos");
