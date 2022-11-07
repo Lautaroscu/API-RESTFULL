@@ -20,10 +20,10 @@
         {
             $chapters = $this->chapter_model->getAll();
             if ($chapters) {
-                if (!empty($_GET['sort']) && !empty($_GET['order']) &&  !empty($_GET['limit'])) {
+                if (!empty($_GET['sort']) && !empty($_GET['order']) && isset($_GET['page']) &&  !empty($_GET['limit'])) {
                     $sort = $_GET['sort'];
                     $order = $_GET['order'];
-                    $page = 0;
+                    $page = $_GET['page'] ;
                     $limit = $_GET['limit'];
                     $chapters = $this->chapter_model->getAll($sort, $order, $page , $limit);
                     $this->api_view->response($chapters, 200, "se ordeno y pagino con exito");
@@ -88,7 +88,6 @@
             if (empty($body->titulo_cap) || empty($body->descripcion)) {
                 $this->api_view->response("Complete todos los datos", 400);
             } else {
-
                 $this->chapter_model->update($body->titulo_cap, $body->descripcion, $id);
                 $this->api_view->response($body, 201, "Se actualizo correctamente el capitulo con id $id");
             }
