@@ -16,30 +16,7 @@
         {
             return json_decode($this->data);
         }
-        function getAllChapters($params = null)
-        {
-            $chapters = $this->chapter_model->getAll();
-            if ($chapters) {
-                if (!empty($_GET['sort']) && !empty($_GET['order']) && !empty($_GET['page'])) {
-                    $page = $_GET['page'];
-                    $sort = $_GET['sort'];
-                    $order = $_GET['order'];
-                    $chapters = $this->chapter_model->getAll($sort, $order, $page);
-                    $this->api_view->response($chapters, 200, "se ordeno y pagino con exito");
-                } else if (!empty($_GET['sort']) && !empty($_GET['order'])) {
-                    $sort = $_GET['sort'];
-                    $order = $_GET['order'];
-                    $chapters = $this->chapter_model->getAll($sort, $order);
-                    $this->api_view->response($chapters, 200, "se ordeno con exito");
-                }
-                else{
-                    $chapters = $this->chapter_model->getAll();
-                    $this->api_view->response($chapters, 200, "Mostrando " . count($chapters) .  " capitulos");
-                }
-            } else {
-                $this->api_view->response("No se encontro ningun capitulo", 404);
-            }
-        }
+       
         function getChapter($params = null)
         {
             $id = $params[':ID'];
