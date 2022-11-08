@@ -20,23 +20,28 @@
         {
             $chapters = $this->chapter_model->getAll();
             if ($chapters) {
-                if (!empty($_GET['sort']) && !empty($_GET['order']) &&  !empty($_GET['limit'])) {
+                if (isset($_GET['sort']) && isset($_GET['order']) && isset($_GET['page']) && isset($_GET['limit'])) {
                     $sort = $_GET['sort'];
                     $order = $_GET['order'];
-                    $page = 0;
+                    $page = $_GET['page'];
                     $limit = $_GET['limit'];
-                    $chapters = $this->chapter_model->getAll($sort, $order, $page , $limit);
+                    $chapters = $this->chapter_model->getAll($sort, $order, $page, $limit);
                     $this->api_view->response($chapters, 200, "se ordeno y pagino con exito");
-                } else if (!empty($_GET['sort']) && !empty($_GET['order'])) {
+                } else if (isset($_GET['sort']) && isset($_GET['order'])) {
                     $sort = $_GET['sort'];
                     $order = $_GET['order'];
                     $chapters = $this->chapter_model->getAll($sort, $order);
                     $this->api_view->response($chapters, 200, "se ordeno con exito");
-                } else if (!empty($_GET['filter'])) {
+                } else if (isset($_GET['page']) && isset($_GET['limit'])) {
+                    $page = $_GET['page'];
+                    $limit = $_GET['limit'];
+                    $chapters = $this->chapter_model->getAll(null, null, $page, $limit);
+                    $this->api_view->response($chapters, 200, "se pagino con exito");
+                } else if (isset($_GET['filter'])) {
 
-                    $filter = $_GET['filter'] ;
-                    var_dump($filter) ;
-                    $chapters = $this->chapter_model->getAll(null , null , null , $filter);
+                    $filter = $_GET['filter'];
+                    var_dump($filter);
+                    $chapters = $this->chapter_model->getAll(null, null, null, $filter);
                     if ($chapters) {
                         $this->api_view->response($chapters, 200, "filtrado con exito");
                     } else {
@@ -44,6 +49,7 @@
                     }
                 } else {
                     $chapters = $this->chapter_model->getAll();
+
                     $this->api_view->response($chapters, 200, "Mostrando " . count($chapters) .  " capitulos");
                 }
             } else {
