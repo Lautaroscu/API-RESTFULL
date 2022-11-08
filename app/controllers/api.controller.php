@@ -1,16 +1,19 @@
     <?php
     require_once '../API-RESTFULL/app/models/chapter.model.php';
     require_once '../API-RESTFULL/app/views/api.view.php';
+    require_once '../API-RESTFULL/helpers/auth.helper.php';
     class ApiController
     {
         private $chapter_model;
         private $api_view;
         private $data;
+        private $helper;
         function __construct()
         {
             $this->chapter_model = new ChapterModel();
             $this->api_view = new ApiView();
             $this->data = file_get_contents("php://input");
+            $this->helper = new AuthHelper() ;
         }
         private function getData()
         {
@@ -61,6 +64,9 @@
         }
         function deleteChapter($params = null)
         {
+            if(!$this->helper->isLogged()){
+                $this->api_view->response("No estas loggeado" , 401);
+            }
             $id = $params[':ID'];
             $chapter = $this->chapter_model->get($id);
             if ($chapter) {
@@ -77,7 +83,7 @@
             } else {
                 $id = $this->chapter_model->insert($chapter->titulo_cap, $chapter->descripcion, $chapter->numero_cap, $chapter->id_temp_fk);
                 $chapter = $this->chapter_model->get($id);
-                $this->api_view->response($chapter, "Se agrego correctamente el capitulo con id $id", 201);
+                $this->api_view->response($chapter, 201,"Se agrego correctamente el capitulo con id $id");
             }
         }
 
