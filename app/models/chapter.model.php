@@ -9,40 +9,49 @@ class ChapterModel
     {
         $this->db = new PDO('mysql:host=localhost;' . 'dbname=tpe;' . 'charset=utf8', 'root', '');
     }
-    function getAll($sort = null , $order = null , $page = null , $limit = null , $filter = null) 
+    function existeColumna()
     {
-        if(isset($sort) && isset($order) && isset($page) && isset($limit)){
+        try {
+            $query = $this->db->prepare("SHOW COLUMS FROM capitulos");
+            $query->execute();
+            $resultado = $query->fetchAll(PDO::FETCH_OBJ);
+        } catch (\Throwable $th) {
+            $resultado = [];
+        }
+        return $resultado;
+    }
+
+
+
+    function getAll($sort = null, $order = null, $page = null, $limit = null, $filter = null)
+    {
+        if (isset($sort) &&  isset($order) && isset($page) && isset($limit)) {
             $query = $this->db->prepare("SELECT * FROM capitulos ORDER BY $sort $order LIMIT $page , $limit");
             $query->execute();
             $chapters = $query->fetchAll(PDO::FETCH_OBJ);
             return $chapters;
-        }
-        else if(isset($sort) && isset($order)){
+        } else if (isset($sort) && isset($order)) {
             $query = $this->db->prepare("SELECT * FROM capitulos ORDER BY $sort $order");
             $query->execute();
             $chapters = $query->fetchAll(PDO::FETCH_OBJ);
             return $chapters;
-        }
-        else if(isset($filter)){
+        } else if (isset($filter)) {
             $query = $this->db->prepare("SELECT * FROM capitulos WHERE titulo_cap LIKE '%$filter%' OR descripcion LIKE '%$filter%' OR numero_cap LIKE '$filter'");
             $query->execute();
             $chapters = $query->fetchAll(PDO::FETCH_OBJ);
             return $chapters;
-
-        }
-        else{
-             $query = $this->db->prepare("SELECT * FROM capitulos");
+        } else {
+            $query = $this->db->prepare("SELECT * FROM capitulos");
             $query->execute();
             $chapters = $query->fetchAll(PDO::FETCH_OBJ);
             return $chapters;
         }
-       
     }
-   
+
     function filterr($id)
     {
-        $query = $this->db->prepare("SELECT * FROM capitulos WHERE id_temp_fk = ?");
-        $query->execute([$id]);
+        $query = $this->db->prepare("SELECT * FROM capitulos INNER JOIN temporadas  WHERE capitulos.id_temp_fk = ? AND temporadas.id_temp = ?");
+        $query->execute([$id, $id]);
         $chapters = $query->fetchAll(PDO::FETCH_OBJ);
         return $chapters;
     }
@@ -69,6 +78,4 @@ class ChapterModel
         $query = $this->db->prepare("UPDATE capitulos SET titulo_cap = ? , descripcion = ? WHERE id_capitulo = ? ");
         $query->execute(array($title, $description, $id));
     }
-   
-   
 }

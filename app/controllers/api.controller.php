@@ -8,12 +8,22 @@
         private $api_view;
         private $data;
         private $helper;
+        private $columna;
+        private $columns;
         function __construct()
         {
             $this->chapter_model = new ChapterModel();
             $this->api_view = new ApiView();
             $this->data = file_get_contents("php://input");
-            $this->helper = new AuthHelper() ;
+            $this->helper = new AuthHelper();
+            $this->columns  = array(
+                "id_capitulo" , 
+                "titulo_cap" , 
+                "descripcion" , 
+                "numero_cap" , 
+                "id_temp_fk"
+            );  
+
         }
         private function getData()
         {
@@ -21,38 +31,47 @@
         }
         function getAllChapters($params = null)
         {
+          
             $chapters = $this->chapter_model->getAll();
             if ($chapters) {
                 if (!empty($_GET['sort']) && !empty($_GET['order']) && isset($_GET['page']) &&  !empty($_GET['limit'])) {
                     $sort = $_GET['sort'];
                     $order = $_GET['order'];
-                    $page = $_GET['page'] ;
+                    $page = $_GET['page'];
                     $limit = $_GET['limit'];
-                    $chapters = $this->chapter_model->getAll($sort, $order, $page , $limit);
-                    $this->api_view->response($chapters, 200, "se ordeno y pagino con exito");
+                     if(in_array("" , $this->columns)){
+                        $chapters = $this->chapter_model->getAll($sort, $order, $page, $limit);
+                        $this->api_view->response($chapters, 200, "se ordeno y pagino con exito");
+                     } else{
+                        $this->api_view->response("columna desconocida" , 404);
+                     }
+                   
                 } else if (!empty($_GET['sort']) && !empty($_GET['order'])) {
                     $sort = $_GET['sort'];
                     $order = $_GET['order'];
+
                     $chapters = $this->chapter_model->getAll($sort, $order);
                     $this->api_view->response($chapters, 200, "se ordeno con exito");
-                } else if (!empty($_GET['filter'])) {
+                } else if (isset($_GET['filter'])) {
 
-                    $filter = $_GET['filter'] ;
-                    var_dump($filter) ;
-                    $chapters = $this->chapter_model->getAll(null , null , null , $filter);
+                    $filter = $_GET['filter'];
+                    $chapters = $this->chapter_model->getAll(null, null, null, null, $filter);
                     if ($chapters) {
                         $this->api_view->response($chapters, 200, "filtrado con exito");
                     } else {
                         $this->api_view->response("No se encontraron resultados ", 404);
                     }
                 } else {
-                    $chapters = $this->chapter_model->getAll();
-                    $this->api_view->response($chapters, 200, "Mostrando " . count($chapters) .  " capitulos");
+                    $chapters= $this->chapter_model->getAll() ;
+                    $this->api_view->response($chapters, 200 , "Mostrando " . count($chapters) . " capitulos") ;
                 }
             } else {
-                $this->api_view->response("No se encontro ningun capitulo", 404);
+                $this->api_view->response("No se encontraron capitulos", 404);
             }
+
         }
+
+
         function getChapter($params = null)
         {
             $id = $params[':ID'];
@@ -64,8 +83,9 @@
         }
         function deleteChapter($params = null)
         {
-            if(!$this->helper->isLogged()){
-                $this->api_view->response("No estas loggeado" , 401);
+            if (!$this->helper->isLogged()) {
+                $this->api_view->response("No estas loggeado", 401);
+                return;
             }
             $id = $params[':ID'];
             $chapter = $this->chapter_model->get($id);
@@ -77,18 +97,26 @@
         }
         function insertChapter()
         {
+            if (!$this->helper->isLogged()) {
+                $this->api_view->response("No estas loggeado", 401);
+                return;
+            }
             $chapter = $this->getData();
             if (empty($chapter->titulo_cap) || empty($chapter->descripcion) || empty($chapter->numero_cap) || empty($chapter->id_temp_fk)) {
                 $this->api_view->response("Complete todos los datos", 400);
             } else {
                 $id = $this->chapter_model->insert($chapter->titulo_cap, $chapter->descripcion, $chapter->numero_cap, $chapter->id_temp_fk);
                 $chapter = $this->chapter_model->get($id);
-                $this->api_view->response($chapter, 201,"Se agrego correctamente el capitulo con id $id");
+                $this->api_view->response($chapter, 201, "Se agrego correctamente el capitulo con id $id");
             }
         }
 
         function updateChapter($params = null)
         {
+            if (!$this->helper->isLogged()) {
+                $this->api_view->response("No estas loggeado", 401);
+                return;
+            }
             $id = $params[':ID'];
             $body = $this->getData();
             if (empty($body->titulo_cap) || empty($body->descripcion)) {
@@ -97,5 +125,12 @@
                 $this->chapter_model->update($body->titulo_cap, $body->descripcion, $id);
                 $this->api_view->response($body, 201, "Se actualizo correctamente el capitulo con id $id");
             }
+        }
+        function filterChapters($params = null)
+        {
+            $id_fk = $_GET['season'];
+
+            $chapters = $this->chapter_model->filterr($id_fk);
+            $this->api_view->response($chapters, 200, "Mostrando " . count($chapters) . " capitulos de la temporada $id_fk");
         }
     }
