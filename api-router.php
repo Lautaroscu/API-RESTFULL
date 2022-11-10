@@ -5,7 +5,7 @@ require_once '../API-RESTFULL/app/controllers/auth-api-controller.php';
 //instancia el Router
 $router = new Router();
 
-$router->addRoute('chapters/', 'GET', 'ApiController', 'getAllChapters');
+$router->addRoute('chapters', 'GET', 'ApiController', 'getAllChapters');
 $router->addRoute('chapters/:ID', 'GET', 'ApiController', 'getChapter');
 $router->addRoute('seasons', 'GET', 'ApiController', 'filterChapters');
 $router->addRoute('chapters/:ID', 'DELETE', 'ApiController', 'deleteChapter');

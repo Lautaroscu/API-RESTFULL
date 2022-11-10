@@ -59,7 +59,6 @@ function getToken($params = null)
         $secret = getSecret();
         $header = base64url_encode(json_encode($header));
         $payload = base64url_encode(json_encode($payload));
-        var_dump($secret);
         $signature = hash_hmac('SHA256', "$header.$payload", $secret, true);
         $signature = base64url_encode($signature);
         $token = "$header.$payload.$signature";
