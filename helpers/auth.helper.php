@@ -1,12 +1,10 @@
 <?php
-
 require_once '../API-RESTFULL/apiAuth/secret.php' ;
 class AuthHelper
 {
 
     function getToken()
     {
-
         $auth = $this->getAuthHeader();
         $auth = explode(" ", $auth);
         if ($auth[0] != "Bearer" || count($auth) != 2) {
