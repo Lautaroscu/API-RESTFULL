@@ -75,20 +75,18 @@ class ApiController
                 $order = $_GET['order'];
                 if (in_array($order, $this->order) && in_array($sort, $this->columns)) {
                     $chapters = $this->chapter_model->getAll($sort, $order);
-                    $this->api_view->response($chapters, 200, "se ordeno con exito");
-                } else if (!empty($_GET['filter'])) {
-
-                    $filter = $_GET['filter'] ;
-                    var_dump($filter) ;
-                    $chapters = $this->chapter_model->getAll(null , null , null , $filter);
-                    if ($chapters) {
-                        $this->api_view->response($chapters, 200, "filtrado con exito");
-                    } else {
-                        $this->api_view->response("No se encontraron resultados ", 404);
-                    }
+                    $this->api_view->response($chapters, 200, "se ordenaron " . count($chapters) . " capitulos con exito");
                 } else {
-                    $chapters = $this->chapter_model->getAll();
-                    $this->api_view->response($chapters, 200, "Mostrando " . count($chapters) .  " capitulos");
+                    $this->api_view->response("Columna desconocida u orden distinto de ASC/DESC", 404);
+                }
+            } else if (isset($_GET['filter'])) {
+
+                $filter = $_GET['filter'];
+                $chapters = $this->chapter_model->getAll(null, null, null, null, $filter);
+                if ($chapters) {
+                    $this->api_view->response($chapters, 200, "Se filtraron " . count($chapters) . " capitulos con exito");
+                } else {
+                    $this->api_view->response("No se encontraron resultados ", 404);
                 }
             } else {
                 $chapters = $this->chapter_model->getAll();
@@ -154,5 +152,11 @@ class ApiController
             $this->api_view->response($body, 201, "Se actualizo correctamente el capitulo con id $id");
         }
     }
-   
+    // function filterChapters($params = null)
+    // {
+    //     $id_fk = $_GET['season'];
+
+    //     $chapters = $this->chapter_model->filterr($id_fk);
+    //     $this->api_view->response($chapters, 200, "Mostrando " . count($chapters) . " capitulos de la temporada $id_fk");
+    // }
 }
