@@ -57,31 +57,35 @@ function getAll($sort = null, $order = null, $page = null, $limit = null, $filte
         return $chapters;
     }
 }
-    function get($id)
-    {
-        $query = $this->db->prepare("SELECT * FROM capitulos WHERE id_capitulo = ?");
-        $query->execute([$id]);
-        $chapter = $query->fetch(PDO::FETCH_OBJ);
-        return $chapter;
-    }
-    function delete($id)
-    {
-        $query = $this->db->prepare("DELETE FROM capitulos WHERE id_capitulo = ?");
-        $query->execute([$id]);
-    }
-    function insert($title, $description, $numero_cap, $season)
-    {
-        $query = $this->db->prepare("INSERT INTO capitulos(titulo_cap , descripcion , numero_cap , id_temp_fk) VALUES (? , ? , ? , ?)");
-        $query->execute(array($title, $description, $numero_cap, $season));
-        return $this->db->lastInsertId();
-    }
-    function update($title, $description, $id)
-    {
-        $query = $this->db->prepare("UPDATE capitulos SET titulo_cap = ? , descripcion = ? WHERE id_capitulo = ? ");
-        $query->execute(array($title, $description, $id));
-    }
-    
-   
-   
-}
 
+function filterr($id)
+{
+    $query = $this->db->prepare("SELECT * FROM capitulos INNER JOIN temporadas  WHERE capitulos.id_temp_fk = ? AND temporadas.id_temp = ?");
+    $query->execute([$id, $id]);
+    $chapters = $query->fetchAll(PDO::FETCH_OBJ);
+    return $chapters;
+}
+function get($id)
+{
+    $query = $this->db->prepare("SELECT * FROM capitulos WHERE id_capitulo = ?");
+    $query->execute([$id]);
+    $chapter = $query->fetch(PDO::FETCH_OBJ);
+    return $chapter;
+}
+function delete($id)
+{
+    $query = $this->db->prepare("DELETE FROM capitulos WHERE id_capitulo = ?");
+    $query->execute([$id]);
+}
+function insert($title, $description, $numero_cap, $season)
+{
+    $query = $this->db->prepare("INSERT INTO capitulos(titulo_cap , descripcion , numero_cap , id_temp_fk) VALUES (? , ? , ? , ?)");
+    $query->execute(array($title, $description, $numero_cap, $season));
+    return $this->db->lastInsertId();
+}
+function update($title, $description, $id)
+{
+    $query = $this->db->prepare("UPDATE capitulos SET titulo_cap = ? , descripcion = ? WHERE id_capitulo = ? ");
+    $query->execute(array($title, $description, $id));
+}
+}

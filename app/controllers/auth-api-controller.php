@@ -53,7 +53,7 @@ function getToken($params = null)
         );
         $payload = array(
             "id" => 1,
-            "name" => "$name",
+            "name" => $name,
             "exp" => time() + 3000
         );
         $secret = getSecret();
