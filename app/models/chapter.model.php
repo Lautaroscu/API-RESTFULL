@@ -56,6 +56,7 @@ function getAll($sort = null, $order = null, $page = null, $limit = null, $filte
         $chapters = $query->fetchAll(PDO::FETCH_OBJ);
         return $chapters;
     }
+}
     function get($id)
     {
         $query = $this->db->prepare("SELECT * FROM capitulos WHERE id_capitulo = ?");
@@ -79,6 +80,8 @@ function getAll($sort = null, $order = null, $page = null, $limit = null, $filte
         $query = $this->db->prepare("UPDATE capitulos SET titulo_cap = ? , descripcion = ? WHERE id_capitulo = ? ");
         $query->execute(array($title, $description, $id));
     }
+    
    
    
 }
+

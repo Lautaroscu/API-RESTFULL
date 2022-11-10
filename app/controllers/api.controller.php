@@ -154,11 +154,5 @@ class ApiController
             $this->api_view->response($body, 201, "Se actualizo correctamente el capitulo con id $id");
         }
     }
-    function filterChapters($params = null)
-    {
-        $id_fk = $_GET['season'];
-
-        $chapters = $this->chapter_model->filterr($id_fk);
-        $this->api_view->response($chapters, 200, "Mostrando " . count($chapters) . " capitulos de la temporada $id_fk");
-    }
+   
 }
