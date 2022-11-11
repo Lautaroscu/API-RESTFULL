@@ -10,6 +10,7 @@ class ApiView{
 
 
     }
+ 
     private function _requestStatus($code){
         $status = array(
             200 => "OK" ,

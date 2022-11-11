@@ -87,6 +87,17 @@ class ApiController
                     } else {
                         $this->api_view->response("Columna desconocida u orden distinto de ASC/DESC", 404);
                     }
+                } else if (isset($_GET['filter']) && isset($_GET['page']) && isset($_GET['limit'])) {
+                    $filter = $_GET['filter'];
+                    $page = $_GET['page'];
+                    $limit = $_GET['limit'];
+
+                    $chapters = $this->chapter_model->filterPages($filter, $page, $limit);
+                    if (!$chapters) {
+                        $this->api_view->response("No se pudo filtrar y paginar", 404);
+                    }
+                    $this->api_view->response($chapters, 200, "Se filtro y pagino con exito");
+                    
                 } else if (isset($_GET['filter']) && isset($_GET['field'])) {
                     //filtra por todos los campos de la tabla individualmente
                     $filter = $_GET['filter'];
@@ -102,6 +113,14 @@ class ApiController
                     } else {
                         $this->api_view->response("Columna desconocida u orden distinto de ASC/DESC", 404);
                     }
+                } else if (isset($_GET['page']) && isset($_GET['limit'])) {
+                    $page = $_GET['page'];
+                    $limit = $_GET['limit'];
+                    $chapters = $this->chapter_model->pagination($page, $limit);
+                    if (!$chapters) {
+                        $this->api_view->response("No se pudo paginar ningun capitulo", 404);
+                    }
+                    $this->api_view->response($chapters, 200, "Mostrando " . count($chapters) . " capitulos");
                 } else if (isset($_GET['filter'])) {
                     //filtra por todos los campos de la tabla en caso que setee ese parametro
 
@@ -161,8 +180,6 @@ class ApiController
     {
         //inserta un unico item por body (getData()) 
         try {
-        } catch (\Throwable) {
-            $this->api_view->response("Error no encontrado", 500);
             if (!$this->helper->isLogged()) {
                 $this->api_view->response("No estas loggeado", 401);
                 return;
@@ -175,6 +192,8 @@ class ApiController
                 $chapter = $this->chapter_model->get($id);
                 $this->api_view->response($chapter, 201, "Se agrego correctamente el capitulo con id $id");
             }
+        } catch (\Throwable) {
+            $this->api_view->response("Error no encontrado", 500);
         }
     }
 
@@ -182,8 +201,6 @@ class ApiController
     {
         //actualiza un unico item por body (getData())
         try {
-        } catch (\Throwable $th) {
-            $this->api_view->response("Error no encontrado", 500);
             if (!$this->helper->isLogged()) {
                 $this->api_view->response("No estas loggeado", 401);
                 return;
@@ -196,6 +213,8 @@ class ApiController
                 $this->chapter_model->update($body->titulo_cap, $body->descripcion, $id);
                 $this->api_view->response($body, 201, "Se actualizo correctamente el capitulo con id $id");
             }
+        } catch (\Throwable $th) {
+            $this->api_view->response("Error no encontrado", 500);
         }
     }
     function filterChapters($params = null)
