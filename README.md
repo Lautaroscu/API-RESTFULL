@@ -19,4 +19,4 @@ SORTING : Add query params to GET requests: api/chapters?sort=field&order=desc
                                         
 Note : order by defautl will be ASC
 
-SEARCHING & FILTERING : Add query params to GET requests: api/chapters?filter=String or Number (search by All fields) or api/chapters?field=Sarasa&search=sarasa (Search by one field) 
+SEARCHING & FILTERING : Add query params to GET requests: api/chapters?filter=String or Number (search by All fields) or api/chapters?sort=Sarasa&filter=sarasa (Search by one field) 

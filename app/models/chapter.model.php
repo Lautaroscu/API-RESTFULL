@@ -9,17 +9,6 @@ class ChapterModel
     {
         $this->db = new PDO('mysql:host=localhost;' . 'dbname=tpe;' . 'charset=utf8', 'root', '');
     }
-    function existeColumna()
-    {
-        try {
-            $query = $this->db->prepare("SHOW COLUMS FROM capitulos");
-            $query->execute();
-            $resultado = $query->fetchAll(PDO::FETCH_OBJ);
-        } catch (\Throwable $th) {
-            $resultado = [];
-        }
-        return $resultado;
-    }
 
 
 
@@ -50,7 +39,7 @@ class ChapterModel
             $chapters = $query->fetchAll(PDO::FETCH_OBJ);
             return $chapters;
         } else if (isset($filter)) {
-            $query = $this->db->prepare("SELECT * FROM capitulos WHERE titulo_cap LIKE '%$filter%' OR descripcion LIKE '%$filter%' OR numero_cap LIKE '$filter'");
+            $query = $this->db->prepare("SELECT * FROM capitulos WHERE id_capitulo = $filter OR titulo_cap LIKE '%$filter%' OR descripcion LIKE '%$filter%' OR numero_cap LIKE '$filter' OR id_temp_fk = $filter");
             $query->execute();
             $chapters = $query->fetchAll(PDO::FETCH_OBJ);
             return $chapters;
@@ -71,18 +60,31 @@ class ChapterModel
         $chapters = $query->fetchAll(PDO::FETCH_OBJ);
         return $chapters;
     }
-    function filterPages($filter, $page, $limit)
+    function filterPagesByField($field, $filter, $page, $limit)
     {
-        $offset = ($page - 1 * $limit);
+        $offset = (($page - 1) * $limit);
         if (is_numeric($filter))
-            $query = $this->db->prepare("SELECT * FROM capitulos WHERE titulo_cap = $filter OR descripcion = $filter OR numero_cap = $filter LIMIT $offset , $limit ");
+            $query = $this->db->prepare("SELECT * FROM capitulos WHERE $field = $filter  LIMIT $offset , $limit");
         else
-            $query = $this->db->prepare("SELECT * FROM capitulos WHERE titulo_cap LIKE '%$filter%' OR descripcion LIKE '%$filter%' OR numero_cap LIKE '$filter' LIMIT $offset , $limit");
+            $query = $this->db->prepare("SELECT * FROM capitulos WHERE $field LIKE '%$filter%' LIMIT $offset , $limit");
 
         $query->execute();
         $chapters = $query->fetchAll(PDO::FETCH_OBJ);
         return $chapters;
     }
+    function filterPages($filter, $page, $limit)
+    {
+        $offset = (($page - 1) * $limit);
+        if (is_numeric($filter)) 
+            $query = $this->db->prepare("SELECT * FROM capitulos WHERE id_capitulo = $filter OR titulo_cap = $filter OR descripcion LIKE '%$filter%' OR numero_cap = $filter OR id_temp_fk = $filter LIMIT $offset , $limit");
+         else 
+            $query = $this->db->prepare("SELECT * FROM capitulos WHERE id_capitulo LIKE $filter OR titulo_cap LIKE '%$filter%' OR descripcion LIKE '%$filter%' OR numero_cap LIKE $filter OR id_temp_fk LIKE $filter LIMIT $offset , $limit");
+        
+        $query->execute();
+        $chapters = $query->fetchAll(PDO::FETCH_OBJ);
+        return $chapters;
+    }
+
 
     function filterChapters($id)
     {
@@ -116,7 +118,6 @@ class ChapterModel
     }
     function pagination($page, $limit)
     {
-        //
         $page = $_GET['page'];
         $limit = $_GET['limit'];
         $offset = (($page - 1) * $limit);
