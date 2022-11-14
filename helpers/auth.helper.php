@@ -1,5 +1,5 @@
 <?php
-require_once '../API-RESTFULL/apiAuth/secret.php' ;
+require_once '../API-RESTFULL/apiAuth/secret.php';
 class AuthHelper
 {
 
@@ -14,7 +14,7 @@ class AuthHelper
         $header = $token[0];
         $payload = $token[1];
         $signature = $token[2];
-        $secret = getSecret() ;
+        $secret = getSecret();
         $new_signature = hash_hmac('SHA256', "$header.$payload", $secret, true);
         $new_signature = base64url_encode($new_signature);
         $payload = json_decode(base64_decode($payload));
