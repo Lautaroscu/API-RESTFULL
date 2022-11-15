@@ -16,10 +16,25 @@ function __construct()
     $this->data = file_get_contents("php://input");
 
 }
-
     private function getData()
     {
         return json_decode($this->data);
+    }
+    function getAllComments(){
+        //devuelve un conjunto de comentarios en forma de json
+        try {
+         
+                  $comments = $this->comment_model->getAll();
+            if(!$comments){
+                $this->api_view->response("No hay capitulos" , 404);
+            }else{
+                $this->api_view->response($comments,200,"Mostrando " . count($comments) . " comentarios");
+
+            }
+            
+        } catch (\Throwable $th) {
+            $this->api_view->response("Error no encontrado", 500);
+        }
     }
     function insertComment()
     {

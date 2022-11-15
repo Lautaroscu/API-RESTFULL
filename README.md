@@ -1,13 +1,26 @@
 API-RESTFULL COMO CONSUMIR ESTA API : Pueba con postman
 
-El endpoint de la API es: http://localhost/tucarpetalocal/API-RESTFULL/api/chapters 
+El endpoint de la API es: http://localhost/tucarpetalocal/API-RESTFULL/api/chapters
+
+
 Method = GET , URL = api/chapters Code = 200 Response = array type json
+
+
+Method = GET , URL = api/comments Code = 200 Response = array type json
+
+
 
 Method = GET, URL = api/chapters/:ID , Code = 200 , Response = Blog
 
+
+
+Method = GET, URL = api/chapters/comments/:ID , Code = 200 , Response = Blog
+
+
+
 Method = GET , URL = api/seasons?season=1 at 5 , code = 200 , Response array type json
 
-Method = POST, URL = api/chapters.comments Code = 201 Response = Blog
+Method = POST, URL = api/chapters/comments Code = 201 Response = Blog
 JSON to example : {
     "comentario" : varchar ,
     "valoracion" : tinynt,

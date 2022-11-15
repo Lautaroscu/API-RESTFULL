@@ -6,6 +6,12 @@ class CommentModel {
     {
         $this->db = new PDO('mysql:host=localhost;' . 'dbname=tpe;' . 'charset=utf8', 'root', '');
     }
+    function getAll(){
+        $query = $this->db->prepare("SELECT * FROM comentarios");
+        $query->execute();
+        $comments = $query->fetchAll(PDO::FETCH_OBJ);
+        return $comments;
+    }
     function delete($id)
     {
         $query = $this->db->prepare("DELETE FROM comentarios WHERE id_comentario = ?");
