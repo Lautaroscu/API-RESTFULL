@@ -20,9 +20,7 @@ class AuthHelper
         $payload = json_decode(base64_decode($payload));
         if ($signature != $new_signature || !isset($payload) || $payload->exp < time())
             return array();
-
-
-        return $payload;
+        return $payload;        
     }
     function isLogged()
     {

@@ -66,8 +66,7 @@ class ApiController
     {
         $countRows = count($this->chapter_model->getAll());
         $total_pages = ($countRows / $this->limit);
-        $offset = (($this->page - 1) * $this->limit);
-        if ($offset > $total_pages)
+        if ($this->page > $total_pages)
             return true;
         else
             return false;
@@ -183,7 +182,7 @@ class ApiController
     }
 
     function filterAndpagination()
-    {
+        {
         if ($this->are_numerics()) {
             $offset = (($this->page - 1) * $this->limit);
 
@@ -213,7 +212,7 @@ class ApiController
     {
         $offset = (($this->page - 1) * $this->limit);
         $chapters = $this->chapter_model->pagination($this->limit, $offset);
-        if (!$chapters || $this->maxLimit()) {
+        if (!$chapters || $this->maxLimit() || !$this->are_numerics()) {
             $this->api_view->response("No se pudo paginar ningun capitulo", 404);
         } else {
             $this->api_view->response($chapters, 200, "Mostrando " . count($chapters) . " capitulos");
