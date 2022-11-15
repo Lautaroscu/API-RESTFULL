@@ -50,7 +50,7 @@ class ChapterModel
 
     function getAll()
     {
-        $query = $this->db->prepare("SELECT * FROM capitulos");
+        $query = $this->db->prepare("SELECT * FROM capitulos ");
         $query->execute();
         $chapters = $query->fetchAll(PDO::FETCH_OBJ);
         return $chapters;
@@ -108,20 +108,5 @@ class ChapterModel
         $chapter = $query->fetch(PDO::FETCH_OBJ);
         return $chapter;
     }
-    function delete($id)
-    {
-        $query = $this->db->prepare("DELETE FROM capitulos WHERE id_capitulo = ?");
-        $query->execute([$id]);
-    }
-    function insert($title, $description, $numero_cap, $season)
-    {
-        $query = $this->db->prepare("INSERT INTO capitulos(titulo_cap , descripcion , numero_cap , id_temp_fk) VALUES (? , ? , ? , ?)");
-        $query->execute(array($title, $description, $numero_cap, $season));
-        return $this->db->lastInsertId();
-    }
-    function update($title, $description, $id)
-    {
-        $query = $this->db->prepare("UPDATE capitulos SET titulo_cap = ? , descripcion = ? WHERE id_capitulo = ? ");
-        $query->execute(array($title, $description, $id));
-    }
+
 }

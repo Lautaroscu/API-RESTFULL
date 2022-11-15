@@ -1,13 +1,10 @@
 <?php
 require_once '../API-RESTFULL/app/models/chapter.model.php';
 require_once '../API-RESTFULL/app/views/api.view.php';
-require_once '../API-RESTFULL/helpers/auth.helper.php';
 class ApiController
 {
     private $chapter_model;
     private $api_view;
-    private $data;
-    private $helper;
     private $columns;
     private $order;
     private $sort;
@@ -15,13 +12,13 @@ class ApiController
     private $page;
     private $limit;
     private $filter;
+    private $data;
 
     function __construct()
     {
         $this->chapter_model = new ChapterModel();
         $this->api_view = new ApiView();
-        $this->data = file_get_contents("php://input");
-        $this->helper = new AuthHelper();
+        $this->data =  file_get_contents("php://input");
         $this->columns  = array(
             "id_capitulo",
             "titulo_cap",
@@ -41,10 +38,6 @@ class ApiController
         $this->filter = isset($_GET['filter']) ? $this->filter = $_GET['filter'] : null;
     }
 
-    private function getData()
-    {
-        return json_decode($this->data);
-    }
     private function fieldExist()
     {
         if (in_array($this->sort, $this->columns)) {
@@ -78,7 +71,6 @@ class ApiController
         else
             return false;
     }
-
 
     function getAllQueryParams($params = null)
     {
@@ -246,66 +238,7 @@ class ApiController
             $this->api_view->response("Error no encontrado", 500);
         }
     }
-    function deleteChapter($params = null)
-    {
-        //elimina un unico item por ID
-        try {
-            if (!$this->helper->isLogged()) {
-                $this->api_view->response("No estas loggeado", 401);
-                return;
-            }
-            $id = $params[':ID'];
-            $chapter = $this->chapter_model->get($id);
-            if ($chapter) {
-                $this->chapter_model->delete($id);
-                $this->api_view->response($chapter, 200, "Se elimino correctamente el capitulo con el id $id");
-            } else
-                $this->api_view->response("El capitulo con el id $id no existe!", 404);
-        } catch (\Throwable $th) {
-            $this->api_view->response("Error no encontrado", 500);
-        }
-    }
-    function insertChapter()
-    {
-        //inserta un unico item por body (getData()) 
-        try {
-            if (!$this->helper->isLogged()) {
-                $this->api_view->response("No estas loggeado", 401);
-                return;
-            }
-            $chapter = $this->getData();
-            if (empty($chapter->titulo_cap) || empty($chapter->descripcion) || empty($chapter->numero_cap) || empty($chapter->id_temp_fk)) {
-                $this->api_view->response("Complete todos los datos", 400);
-            } else {
-                $id = $this->chapter_model->insert($chapter->titulo_cap, $chapter->descripcion, $chapter->numero_cap, $chapter->id_temp_fk);
-                $chapter = $this->chapter_model->get($id);
-                $this->api_view->response($chapter, 201, "Se agrego correctamente el capitulo con id $id");
-            }
-        } catch (\Throwable) {
-            $this->api_view->response("Error no encontrado", 500);
-        }
-    }
-
-    function updateChapter($params = null)
-    {
-        //actualiza un unico item por body (getData())
-        try {
-            if (!$this->helper->isLogged()) {
-                $this->api_view->response("No estas loggeado", 401);
-                return;
-            }
-            $id = $params[':ID'];
-            $body = $this->getData();
-            if (empty($body->titulo_cap) || empty($body->descripcion)) {
-                $this->api_view->response("Complete todos los datos", 400);
-            } else {
-                $this->chapter_model->update($body->titulo_cap, $body->descripcion, $id);
-                $this->api_view->response($body, 201, "Se actualizo correctamente el capitulo con id $id");
-            }
-        } catch (\Throwable $th) {
-            $this->api_view->response("Error no encontrado", 500);
-        }
-    }
+   
     function filterChapters($params = null)
     {
         //devuelve un arreglo de items dependiendo su temporada (id_fk) 

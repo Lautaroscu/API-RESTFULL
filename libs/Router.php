@@ -43,6 +43,7 @@ class Route
         $params = $this->params;
 
         (new $controller())->$method($params);
+        
     }
 }
 
