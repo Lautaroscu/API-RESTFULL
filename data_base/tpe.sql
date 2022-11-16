@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 13-11-2022 a las 18:56:42
+-- Tiempo de generación: 16-11-2022 a las 03:27:49
 -- Versión del servidor: 10.4.24-MariaDB
 -- Versión de PHP: 8.1.6
 
@@ -109,20 +109,36 @@ INSERT INTO `capitulos` (`id_capitulo`, `titulo_cap`, `descripcion`, `numero_cap
 (221, 'sos', 'eoe', 1, 1, ''),
 (222, 'sos', 'eoe', 1, 1, ''),
 (223, 'sos', 'eoe', 1, 1, ''),
-(225, 'sos', 'eoe', 1, 1, ''),
-(226, 'sos', 'eoe', 1, 1, '');
+(225, 'sos', 'eoe', 1, 1, '');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `clientes`
+-- Estructura de tabla para la tabla `comentarios`
 --
 
-CREATE TABLE `clientes` (
-  `id_cliente` int(11) NOT NULL,
+CREATE TABLE `comentarios` (
+  `id_comentario` int(11) NOT NULL,
   `comentario` varchar(250) NOT NULL,
-  `valoracion` tinyint(4) NOT NULL
+  `valoracion` tinyint(4) NOT NULL,
+  `id_capitulo_fk` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `comentarios`
+--
+
+INSERT INTO `comentarios` (`id_comentario`, `comentario`, `valoracion`, `id_capitulo_fk`) VALUES
+(1, 'El capitulo 1 es una locuraaaa!', 1, 1),
+(2, 'El capitulo tres no me gusto mucho!', 0, 3),
+(3, 'el capitulo 4 mejoro bastante, no fue tan aburrido', 1, 4),
+(4, 'Esta serie cada vez se pone mejor, el capitulo 5 fue muy bueno', 1, 5),
+(5, 'capitulo recomendable', 1, 6),
+(6, 'capitulo gooooddd', 1, 6),
+(7, 'comment editado a capitulooo 7', 1, 6),
+(11, 'comment editado a capitulooo n', 1, 7),
+(21, 'capitulo good', 1, 1),
+(22, 'capitulo good', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -181,10 +197,11 @@ ALTER TABLE `capitulos`
   ADD KEY `id_temp_fk` (`id_temp_fk`);
 
 --
--- Indices de la tabla `clientes`
+-- Indices de la tabla `comentarios`
 --
-ALTER TABLE `clientes`
-  ADD PRIMARY KEY (`id_cliente`);
+ALTER TABLE `comentarios`
+  ADD PRIMARY KEY (`id_comentario`),
+  ADD KEY `id_comentario_fk` (`id_capitulo_fk`);
 
 --
 -- Indices de la tabla `temporadas`
@@ -209,10 +226,10 @@ ALTER TABLE `capitulos`
   MODIFY `id_capitulo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=229;
 
 --
--- AUTO_INCREMENT de la tabla `clientes`
+-- AUTO_INCREMENT de la tabla `comentarios`
 --
-ALTER TABLE `clientes`
-  MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `comentarios`
+  MODIFY `id_comentario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de la tabla `temporadas`
@@ -235,6 +252,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `capitulos`
   ADD CONSTRAINT `capitulos_ibfk_1` FOREIGN KEY (`id_temp_fk`) REFERENCES `temporadas` (`id_temp`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `comentarios`
+--
+ALTER TABLE `comentarios`
+  ADD CONSTRAINT `comentarios_ibfk_1` FOREIGN KEY (`id_capitulo_fk`) REFERENCES `capitulos` (`id_capitulo`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

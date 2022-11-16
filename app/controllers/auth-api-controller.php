@@ -44,6 +44,7 @@ function getToken($params = null)
     $pass = $userpass[1];
     $UserDb = $this->user_model->getUser($user);
     $name = $UserDb->email;
+    var_dump($name) ;
 
     if ($UserDb  && password_verify($pass, $UserDb->password)) {
         //  crear un token

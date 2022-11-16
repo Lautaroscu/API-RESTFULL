@@ -10,10 +10,10 @@ private $data;
 
 function __construct()
 {
+    $this->data = file_get_contents("php://input"); 
     $this->comment_model = new CommentModel() ;
     $this->api_view = new ApiView() ;
     $this->helper = new AuthHelper() ;
-    $this->data = file_get_contents("php://input");
 
 }
     private function getData()
@@ -71,11 +71,12 @@ function __construct()
             }
             $id = $params[':ID'];
             $body = $this->getData();
-            if (empty($body->comentario) || empty($body->valoracion) ) {
-                $this->api_view->response("Complete todos los datos", 400);
-            } else {
-                $this->comment_model->update($body->comentario, $body->valoracion,$id);
+            var_dump($body->comentario , $body->valoracion) ;
+            if (!empty($body->comentario) && !empty($body->valoracion) ) {
+                 $this->comment_model->update($body->comentario, $body->valoracion,$id);
                 $this->api_view->response($body, 201, "Se actualizo correctamente el comentario con id $id");
+            } else {
+                $this->api_view->response("Complete todos los datos", 400 );
             }
         } catch (\Throwable $th) {
             $this->api_view->response("Error no encontrado", 500);

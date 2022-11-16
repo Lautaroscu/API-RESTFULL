@@ -13,6 +13,8 @@ $router->addRoute('seasons', 'GET', 'ApiController', 'filterChapters');
 $router->addRoute('chapters/comments/:ID', 'DELETE', 'CommentsController', 'deleteComment');
 $router->addRoute('comments', 'GET', 'CommentsController', 'getAllComments');
 $router->addRoute('chapters/comments/:ID', 'PUT', 'CommentsController', 'updateComment');
+$router->addRoute('chapters/comments/', 'POST', 'CommentsController', 'insertComment');
+
 
 $router->addRoute('auth/token', 'GET', 'AuthApiController', 'getToken');
 
