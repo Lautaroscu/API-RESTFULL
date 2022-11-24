@@ -79,7 +79,6 @@ class ChapterModel
     }
     function filterPages($filter, $offset, $limit)
     {
-        var_dump($filter);
         $query = $this->db->prepare("SELECT * FROM capitulos WHERE titulo_cap LIKE '%$filter%' OR descripcion LIKE '%$filter%' OR numero_cap LIKE '$filter'LIMIT $offset , $limit");
 
         $query->execute();

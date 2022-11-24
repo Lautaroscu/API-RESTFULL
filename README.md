@@ -27,7 +27,7 @@ JSON to example : {
     "id_capitulo_fk" : int, 
 }
 
-Method = PUT, URL = api/chapters/:ID Code = 201 , Response = Blog
+Method = PUT, URL = api/chapters/comments/:ID Code = 201 , Response = Blog
 JSON to example : {
     "comentario" : varchar,
     "valoracion" : tinyint 

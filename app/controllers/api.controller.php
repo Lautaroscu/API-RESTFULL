@@ -58,7 +58,7 @@ class ApiController
     private function maxLimit()
     {
         $countRows = count($this->chapter_model->getAll());
-        $total_pages = ($countRows / $this->limit);
+        $total_pages = ceil(($countRows / $this->limit));
         if ($this->page > $total_pages)
             return true;
         else
@@ -121,7 +121,7 @@ class ApiController
         if ($this->fieldExist() && $this->orderExist() && !$this->maxLimit()) {
             $offset = (($this->page - 1) * $this->limit);
             $chapters = $this->chapter_model->AllQueryParams($this->sort, $this->type, $offset, $this->limit, $this->filter);
-            $this->api_view->response($chapters, 200, "Se ordenaron, paginaron y filtraron " . count($chapters) . "  capitulos con exito");
+            $this->api_view->response($chapters);
         } else {
             $this->api_view->response("No se pudo realizar la consulta", 404);
         }
@@ -130,7 +130,7 @@ class ApiController
     {
         if ($this->orderExist() && $this->fieldExist()) {
             $chapters = $this->chapter_model->orderAndFilter($this->sort, $this->type, $this->filter);
-            $this->api_view->response($chapters, 200, "Se ordenaron y filtraron " . count($chapters) . " capitulos con exito");
+            $this->api_view->response($chapters);
         } else {
             $this->api_view->response("Columna desconocida u orden distinto de ASC/DESC", 404);
         }
@@ -143,7 +143,7 @@ class ApiController
             if ($this->maxLimit() || !$chapters) {
                 $this->api_view->response("Limite de paginas excedido");
             } else {
-                $this->api_view->response($chapters, 200, "Se ordenaron y paginaron " . count($chapters) . " capitulos con exito");
+                $this->api_view->response($chapters);
             }
         } else {
             $this->api_view->response("No se pudo ordernar y paginar", 400);
@@ -154,7 +154,7 @@ class ApiController
 
         if (($this->orderExist()) && ($this->fieldExist())) {
             $chapters = $this->chapter_model->order($this->sort, $this->type);
-            $this->api_view->response($chapters, 200, "se ordenaron " . count($chapters) . " capitulos con exito");
+            $this->api_view->response($chapters);
         } else {
             $this->api_view->response("Columna desconocida u orden distinto de ASC/DESC", 404);
         }
@@ -168,13 +168,13 @@ class ApiController
             if (!$chapters || $this->maxLimit()) {
                 $this->api_view->response("No se pudo filtrar por el campo " . $this->sort . " y paginar (Limite excedido)", 404);
             } else
-                $this->api_view->response($chapters, 200, "Se filtro por el campo " . $this->sort . " y pagino con exito");
+                $this->api_view->response($chapters);
         } else
             $this->api_view->response("Page y Limit deben ser numericos", 400);
     }
 
     function filterAndpagination()
-        {
+    {
         if ($this->are_numerics()) {
             $offset = (($this->page - 1) * $this->limit);
 
@@ -182,7 +182,7 @@ class ApiController
             if (!$chapters || $this->maxLimit()) {
                 $this->api_view->response("No se pudo filtrar y paginar", 404);
             } else
-                $this->api_view->response($chapters, 200, "Se filtro por todos los campos y pagino con exito");
+                $this->api_view->response($chapters);
         } else
             $this->api_view->response("Page y Limit deben ser numericos", 400);
     }
@@ -192,7 +192,7 @@ class ApiController
             $chapters = $this->chapter_model->filterByField($this->sort, $this->filter);
 
             if ($chapters) {
-                $this->api_view->response($chapters, 200, "Se filtraron " . count($chapters) . " capitulos de la columna " . $this->sort .  "  con exito");
+                $this->api_view->response($chapters);
             } else {
                 $this->api_view->response("No se encontraron resultados ", 404);
             }
@@ -202,19 +202,26 @@ class ApiController
     }
     function pagination()
     {
-        $offset = (($this->page - 1) * $this->limit);
-        $chapters = $this->chapter_model->pagination($this->limit, $offset);
-        if (!$chapters || $this->maxLimit() || !$this->are_numerics()) {
-            $this->api_view->response("No se pudo paginar ningun capitulo", 404);
-        } else {
-            $this->api_view->response($chapters, 200, "Mostrando " . count($chapters) . " capitulos");
+        try {
+            $offset = (($this->page - 1) * $this->limit);
+            $chapters = $this->chapter_model->pagination($this->limit, $offset);
+            if (!$this->are_numerics() || $this->maxLimit()) {
+                $this->api_view->response("No se pudo paginar ningun capitulo" , 400);
+                
+               
+            }else{
+                    $this->api_view->response($chapters);
+
+            }
+        } catch (Throwable $th) {
+            $this->api_view->response("error no encontrado", 500);
         }
     }
     function filterAll()
     {
         $chapters = $this->chapter_model->filter($this->filter);
         if ($chapters) {
-            $this->api_view->response($chapters, 200, "Se filtraron " . count($chapters) . " capitulos con exito");
+            $this->api_view->response($chapters);
         } else {
             $this->api_view->response("No se encontraron resultados ", 404);
         }
@@ -222,7 +229,7 @@ class ApiController
     function getAll()
     {
         $chapters = $this->chapter_model->getAll();
-        $this->api_view->response($chapters, 200, "Mostrando " . count($chapters) . " capitulos");
+        $this->api_view->response($chapters);
     }
 
     function getChapter($params = null)
@@ -238,7 +245,7 @@ class ApiController
             $this->api_view->response("Error no encontrado", 500);
         }
     }
-   
+
     function filterChapters($params = null)
     {
         //devuelve un arreglo de items dependiendo su temporada (id_fk) 
@@ -247,7 +254,7 @@ class ApiController
 
             $chapters = $this->chapter_model->filterChapters($id_fk);
             if ($chapters) {
-                $this->api_view->response($chapters, 200, "Mostrando " . count($chapters) . " capitulos de la temporada $id_fk");
+                $this->api_view->response($chapters);
             }
         } catch (\Throwable $th) {
             $this->api_view->response("Error no encontrado", 500);

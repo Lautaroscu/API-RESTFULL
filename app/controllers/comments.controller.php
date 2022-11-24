@@ -1,37 +1,36 @@
-<?php 
-require_once '../API-RESTFULL/app/models/comment.model.php' ;
-require_once '../API-RESTFULL/app/views/api.view.php' ;
-require_once '../API-RESTFULL/helpers/auth.helper.php' ;
-class CommentsController {
-private $comment_model ;
-private $api_view;
-private $helper;
-private $data;
-
-function __construct()
+<?php
+require_once '../API-RESTFULL/app/models/comment.model.php';
+require_once '../API-RESTFULL/app/views/api.view.php';
+require_once '../API-RESTFULL/helpers/auth.helper.php';
+class CommentsController
 {
-    $this->data = file_get_contents("php://input"); 
-    $this->comment_model = new CommentModel() ;
-    $this->api_view = new ApiView() ;
-    $this->helper = new AuthHelper() ;
+    private $comment_model;
+    private $api_view;
+    private $helper;
+    private $data;
 
-}
+    function __construct()
+    {
+        $this->data = file_get_contents("php://input");
+        $this->comment_model = new CommentModel();
+        $this->api_view = new ApiView();
+        $this->helper = new AuthHelper();
+    }
     private function getData()
     {
         return json_decode($this->data);
     }
-    function getAllComments(){
+    function getAllComments()
+    {
         //devuelve un conjunto de comentarios en forma de json
         try {
-         
-                  $comments = $this->comment_model->getAll();
-            if(!$comments){
-                $this->api_view->response("No hay capitulos" , 404);
-            }else{
-                $this->api_view->response($comments,200,"Mostrando " . count($comments) . " comentarios");
 
+            $comments = $this->comment_model->getAll();
+            if (!$comments) {
+                $this->api_view->response("No hay comentarios", 404);
+            } else {
+                $this->api_view->response($comments);
             }
-            
         } catch (\Throwable $th) {
             $this->api_view->response("Error no encontrado", 500);
         }
@@ -42,21 +41,19 @@ function __construct()
         try {
             if (!$this->helper->isLogged()) {
                 $this->api_view->response("No estas loggeado", 401);
-                return; 
+                return;
             }
             $comment = $this->getData();
-            if(empty($comment->comentario) || empty($comment->valoracion) || empty($comment->id_capitulo_fk)){
-                $this->api_view->response("Complete todos los datos" , 400) ;
-            }
-            else{
+            if (empty($comment->comentario) || empty($comment->valoracion) || empty($comment->id_capitulo_fk)) {
+                $this->api_view->response("Complete todos los datos", 400);
+            } else {
 
-                $id = $this->comment_model->insert($comment->comentario , $comment->valoracion , $comment->id_capitulo_fk) ;
-
-                if($id){
-                    $this->api_view->response($comment , 201 , "Se agrego con exito el comentario con el id $id");
+                $id = $this->comment_model->insert($comment->comentario, $comment->valoracion, $comment->id_capitulo_fk);
+                if ($id) {
+                    $this->api_view->response($comment, 201);
                 }
             }
-        } catch (\Throwable) {
+        } catch (Throwable $th) {
             $this->api_view->response("Error no encontrado", 500);
         }
     }
@@ -71,14 +68,14 @@ function __construct()
             }
             $id = $params[':ID'];
             $body = $this->getData();
-            var_dump($body->comentario , $body->valoracion) ;
-            if (!empty($body->comentario) && !empty($body->valoracion) ) {
-                 $this->comment_model->update($body->comentario, $body->valoracion,$id);
-                $this->api_view->response($body, 201, "Se actualizo correctamente el comentario con id $id");
+            if ((!empty($body->comentario)) && (!empty($body->valoracion))) {
+                $this->comment_model->update($body->comentario, $body->valoracion, $id);
+                $this->api_view->response($body, 201);
             } else {
-                $this->api_view->response("Complete todos los datos", 400 );
+                $this->api_view->response("Complete todos los datos", 400);
+                return;
             }
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             $this->api_view->response("Error no encontrado", 500);
         }
     }
@@ -94,10 +91,10 @@ function __construct()
             $comment = $this->comment_model->get($id);
             if ($comment) {
                 $this->comment_model->delete($id);
-                $this->api_view->response($comment, 200, "Se elimino correctamente el capitulo con el id $id");
+                $this->api_view->response($comment);
             } else
-                $this->api_view->response("El capitulo con el id $id no existe!", 404);
-        } catch (\Throwable $th) {
+                $this->api_view->response("El cometario con el id $id no existe!", 404);
+        } catch (Throwable $th) {
             $this->api_view->response("Error no encontrado", 500);
         }
     }
